@@ -20,6 +20,9 @@ class Routes {
   static const messages = 'messages';
   static const compte = 'compte';
   static const produit = 'produit';
+  static const mesAnnonces = 'mes-annonces';
+  static const nouvelleAnnonce = 'nouvelle-annonce';
+  static const modifierAnnonce = 'modifier-annonce';
 
   // --- chemins ----------------------------------------------------------
   static const cheminDemarrage = '/';
@@ -33,4 +36,7 @@ class Routes {
   static const cheminMessages = '/messages';
   static const cheminCompte = '/compte';
   static const cheminProduit = '/produit/:id';
+  static const cheminMesAnnonces = '/mes-annonces';
+  static const cheminNouvelleAnnonce = '/annonce/nouvelle';
+  static const cheminModifierAnnonce = '/annonce/:id/modifier';
 }

@@ -1,7 +1,41 @@
+// Version unique du greffon Kotlin, alignee sur celle declaree dans
+// settings.gradle.kts. Les deux doivent rester identiques.
+val versionKotlinProjet = "2.4.0"
+
 allprojects {
     repositories {
         google()
         mavenCentral()
+    }
+
+    // ----------------------------------------------------------------------
+    // Unifie la version du greffon Gradle Kotlin sur TOUT le projet.
+    //
+    // Le probleme : certains greffons Flutter epinglent leur propre version
+    // dans leur `buildscript`. `image_picker_android` demande la 2.3.20,
+    // alors que l'application utilise la 2.4.0 (declaree dans
+    // settings.gradle.kts). Gradle doit donc telecharger une SECONDE
+    // version du greffon Kotlin, uniquement pour configurer ce sous-projet.
+    //
+    // Sur une connexion instable, ce telechargement echoue — et comme il a
+    // lieu a la CONFIGURATION, toute la compilation tombe avec des erreurs
+    // trompeuses (« 'kotlin-android' plugin requires one of the Android
+    // Gradle plugins »), qui ne sont que la consequence du classpath
+    // incomplet.
+    //
+    // La redirection resout les deux : plus rien a telecharger, et une
+    // seule version de Kotlin compile tout le projet — ce qui evite aussi
+    // les incompatibilites de metadonnees entre versions.
+    buildscript {
+        configurations.all {
+            resolutionStrategy.eachDependency {
+                if (requested.group == "org.jetbrains.kotlin" &&
+                    requested.name.startsWith("kotlin-gradle-plugin")
+                ) {
+                    useVersion(versionKotlinProjet)
+                }
+            }
+        }
     }
 }
 

@@ -28,9 +28,9 @@ class MainShell extends StatelessWidget {
       libelle: 'Recherche',
     ),
     ElementNav(
-      icone: Icons.favorite_outline_rounded,
-      iconeActive: Icons.favorite_rounded,
-      libelle: 'Favoris',
+      icone: Icons.sell_outlined,
+      iconeActive: Icons.sell_rounded,
+      libelle: 'Vendre',
     ),
     ElementNav(
       icone: Icons.chat_bubble_outline_rounded,

@@ -9,6 +9,8 @@ import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/register_screen.dart';
 import '../../features/auth/presentation/splash_screen.dart';
 import '../../features/auth/providers/auth_provider.dart';
+import '../../features/annonces/presentation/editeur_annonce_screen.dart';
+import '../../features/annonces/presentation/mes_annonces_screen.dart';
 import '../../features/catalogue/presentation/accueil_screen.dart';
 import '../../features/catalogue/presentation/produit_detail_screen.dart';
 import '../../features/catalogue/presentation/recherche_screen.dart';
@@ -124,6 +126,21 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
 
+      GoRoute(
+        path: Routes.cheminNouvelleAnnonce,
+        name: Routes.nouvelleAnnonce,
+        parentNavigatorKey: _cleRacine,
+        builder: (context, etat) => const EditeurAnnonceScreen(),
+      ),
+      GoRoute(
+        path: Routes.cheminModifierAnnonce,
+        name: Routes.modifierAnnonce,
+        parentNavigatorKey: _cleRacine,
+        builder: (context, etat) => EditeurAnnonceScreen(
+          annonceId: int.tryParse(etat.pathParameters['id'] ?? ''),
+        ),
+      ),
+
       // --- coquille a onglets -----------------------------------------
       StatefulShellRoute.indexedStack(
         parentNavigatorKey: _cleRacine,
@@ -163,16 +180,9 @@ final routerProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: Routes.cheminFavoris,
-                name: Routes.favoris,
-                builder: (context, etat) => const PlaceholderScreen(
-                  titre: 'Favoris',
-                  etape: 'Etape 5',
-                  icone: Icons.favorite_rounded,
-                  description:
-                      'Vos produits sauvegardes, avec les alertes de prix '
-                      'et de disponibilite.',
-                ),
+                path: Routes.cheminMesAnnonces,
+                name: Routes.mesAnnonces,
+                builder: (context, etat) => const MesAnnoncesScreen(),
               ),
             ],
           ),

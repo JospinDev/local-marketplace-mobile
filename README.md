@@ -19,7 +19,7 @@ HTTP.
 | 1 | Authentification complète | ✅ livré |
 | 2 | Mon compte (profil + vitrine) | ✅ livré |
 | 3 | Catalogue public, recherche, fiche produit | ✅ livré |
-| 4 | Mes annonces, stock, images | ⏳ à venir |
+| 4 | Mes annonces, stock, images | ✅ livré |
 | 5 | Favoris et vendeurs suivis | ⏳ à venir |
 | 6 | Messagerie temps réel | ⏳ à venir |
 | 7–11 | Réservations, ventes, avis, tableau de bord, notifications | ⏳ à venir |
@@ -173,7 +173,8 @@ en désactive **une seule**, avec sa raison écrite dans le fichier.
 
 - [ ] Remplacer l'icône et le nom d'application par défaut
 - [ ] Déclarer l'origine de production côté backend (`CORS_ALLOWED_ORIGINS`)
-- [ ] Configurer Firebase si les notifications push sont souhaitées
-      (l'application fonctionne sans : l'historique et le temps réel
-      suffisent)
+- [ ] Configurer Firebase si les notifications push sont souhaitées —
+      **compte de service**, pas de clé serveur : l'ancienne API FCM a été
+      désactivée par Google en 2024 (l'application fonctionne sans :
+      l'historique et le temps réel suffisent)
 - [ ] Signer l'APK (`android/key.properties`, jamais versionné)
