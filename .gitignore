@@ -1,0 +1,107 @@
+# ==============================================================================
+# Marketplace Burundi — application mobile Flutter
+#
+# Depot SEPARE de celui de l'API. Rien de genere, de local ou de secret ne
+# part sur GitHub.
+#
+# A NE JAMAIS AJOUTER ICI :
+#   - pubspec.lock : c'est une APPLICATION, pas une bibliotheque. Le verrou
+#     garantit que toute l'equipe compile avec les memes versions.
+#   - android/app/src/main/ et ios/Runner/ : la configuration native fait
+#     partie du code source.
+# ==============================================================================
+
+# ------------------------------------------------------------------ secrets
+# Cles de signature, comptes de service, variables d'environnement.
+*.jks
+*.keystore
+*.p12
+*.pem
+key.properties
+android/key.properties
+**/google-services.json
+**/GoogleService-Info.plist
+**/serviceAccount*.json
+.env
+.env.*
+!.env.example
+
+# ------------------------------------------------------------------- divers
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# ---------------------------------------------------------------- outils
+*.iml
+*.ipr
+*.iws
+.idea/
+# Le dossier .vscode peut contenir des configurations de lancement utiles a
+# l'equipe : on versionne les taches, pas les reglages personnels.
+.vscode/*
+!.vscode/launch.json
+!.vscode/tasks.json
+!.vscode/extensions.json
+
+# ------------------------------------------------------------ Flutter / Dart
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+/coverage/
+.widget_preview/
+**/*.g.dart
+**/*.freezed.dart
+**/*.mocks.dart
+
+# Symbolisation et obfuscation
+app.*.symbols
+app.*.map.json
+
+# ------------------------------------------------------------------ Android
+android/.gradle/
+android/captures/
+android/local.properties
+android/app/debug/
+android/app/profile/
+android/app/release/
+android/.cxx/
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# ---------------------------------------------------------------------- iOS
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/App.framework/
+ios/Flutter/Flutter.framework/
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Flutter/ephemeral/
+ios/Flutter/flutter_export_environment.sh
+ios/ServiceDefinitions.json
+ios/Runner/GeneratedPluginRegistrant.*
+ios/Runner.xcworkspace/xcuserdata/
+ios/Runner.xcodeproj/xcuserdata/
+ios/Runner.xcodeproj/project.xcworkspace/xcuserdata/
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# ---------------------------------------------------------------------- Web
+/web/.dart_tool/

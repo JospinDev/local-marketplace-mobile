@@ -1,0 +1,51 @@
+# Configuration de l'analyseur Dart.
+#
+# `flutter analyze` doit rendre ZERO probleme : un avertissement qu'on
+# s'habitue a ignorer finit par cacher une vraie erreur.
+
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+
+  errors:
+    # Un TODO oublie ne doit pas faire echouer l'analyse, mais il doit
+    # rester visible.
+    todo: info
+
+linter:
+  rules:
+    # --- desactivee, avec sa raison ------------------------------------
+
+    # Insatisfiable dans notre cas : la regle demande d'ecrire
+    # `this._jetons` en parametre, or Dart INTERDIT un parametre nomme
+    # commencant par un tiret bas. Nos services recoivent des dependances
+    # nommees (`required TokenStore jetons`) qu'ils rangent dans des
+    # champs prives : c'est le bon modele, et la regle ne sait pas le
+    # reconnaitre.
+    prefer_initializing_formals: false
+
+    # --- activees en plus du jeu par defaut ------------------------------
+
+    # Un `const` manquant force a reconstruire le widget a chaque image :
+    # sur une liste de produits qui defile, cela se voit.
+    prefer_const_constructors: true
+    prefer_const_declarations: true
+    prefer_const_literals_to_create_immutables: true
+
+    # Un `BuildContext` utilise apres un `await` peut pointer vers un
+    # widget demonte : c'est la source la plus frequente de plantage en
+    # Flutter, le controle doit rester actif.
+    use_build_context_synchronously: true
+
+    # Lisibilite
+    always_declare_return_types: true
+    avoid_empty_else: true
+    unnecessary_parenthesis: true
+    sort_child_properties_last: true

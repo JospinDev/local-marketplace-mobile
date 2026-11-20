@@ -1,0 +1,59 @@
+name: marketplace_burundi
+description: "Marketplace Burundi — application mobile multi-vendeurs."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  # --- etat ------------------------------------------------------------
+  # Riverpod : providers typés, verifies a la compilation, testables sans
+  # widget. Choisi plutot que Bloc pour la concision a cette taille.
+  flutter_riverpod: ^2.6.1
+
+  # --- navigation -------------------------------------------------------
+  # go_router centralise les redirections d'authentification en un seul
+  # endroit, au lieu de les eparpiller dans chaque ecran.
+  go_router: ^14.6.2
+
+  # --- reseau -----------------------------------------------------------
+  dio: ^5.7.0
+
+  # --- stockage ---------------------------------------------------------
+  # Les jetons vont dans le trousseau du systeme, jamais dans les
+  # preferences en clair (regle du guide d'integration).
+  flutter_secure_storage: ^9.2.2
+  shared_preferences: ^2.3.3
+
+  # --- interface --------------------------------------------------------
+  google_fonts: ^6.2.1
+  cached_network_image: ^3.4.1
+  shimmer: ^3.0.0
+
+  # --- animations -------------------------------------------------------
+  # flutter_animate : enchainements declaratifs (.fadeIn().slideY()),
+  # bien plus lisibles qu'un AnimationController par effet.
+  flutter_animate: ^4.5.2
+  animations: ^2.0.11
+
+  # --- temps reel -------------------------------------------------------
+  web_socket_channel: ^3.0.1
+
+  # --- divers -----------------------------------------------------------
+  intl: ^0.19.0
+  image_picker: ^1.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
