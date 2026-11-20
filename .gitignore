@@ -61,7 +61,10 @@ migrate_working_dir/
 .packages
 .pub-cache/
 .pub/
+# `/build/` seul ne couvre que la racine : Gradle ecrit aussi dans
+# android/build/ et android/app/build/, d'ou le motif non ancre.
 /build/
+**/build/
 /coverage/
 .widget_preview/
 **/*.g.dart
