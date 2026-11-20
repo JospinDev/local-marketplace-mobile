@@ -19,6 +19,7 @@ class Routes {
   static const favoris = 'favoris';
   static const messages = 'messages';
   static const compte = 'compte';
+  static const produit = 'produit';
 
   // --- chemins ----------------------------------------------------------
   static const cheminDemarrage = '/';
@@ -31,4 +32,5 @@ class Routes {
   static const cheminFavoris = '/favoris';
   static const cheminMessages = '/messages';
   static const cheminCompte = '/compte';
+  static const cheminProduit = '/produit/:id';
 }

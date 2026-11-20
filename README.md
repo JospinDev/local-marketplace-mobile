@@ -18,7 +18,7 @@ HTTP.
 | 0 | Fondations : client HTTP, thème, animations | ✅ livré |
 | 1 | Authentification complète | ✅ livré |
 | 2 | Mon compte (profil + vitrine) | ✅ livré |
-| 3 | Catalogue public, recherche, fiche produit | ⏳ à venir |
+| 3 | Catalogue public, recherche, fiche produit | ✅ livré |
 | 4 | Mes annonces, stock, images | ⏳ à venir |
 | 5 | Favoris et vendeurs suivis | ⏳ à venir |
 | 6 | Messagerie temps réel | ⏳ à venir |

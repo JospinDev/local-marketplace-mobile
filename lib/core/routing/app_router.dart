@@ -9,7 +9,9 @@ import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/register_screen.dart';
 import '../../features/auth/presentation/splash_screen.dart';
 import '../../features/auth/providers/auth_provider.dart';
-import '../../features/home/presentation/home_screen.dart';
+import '../../features/catalogue/presentation/accueil_screen.dart';
+import '../../features/catalogue/presentation/produit_detail_screen.dart';
+import '../../features/catalogue/presentation/recherche_screen.dart';
 import '../../features/shell/main_shell.dart';
 import '../../features/shell/placeholder_screen.dart';
 import '../theme/app_theme.dart';
@@ -106,6 +108,22 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, etat) => const ForgotPasswordScreen(),
       ),
 
+      GoRoute(
+        path: Routes.cheminProduit,
+        name: Routes.produit,
+        parentNavigatorKey: _cleRacine,
+        builder: (context, etat) {
+          final extra = etat.extra;
+          final hero = extra is Map && extra['hero'] is String
+              ? extra['hero'] as String
+              : 'recherche';
+          return ProduitDetailScreen(
+            produitId: int.tryParse(etat.pathParameters['id'] ?? '') ?? 0,
+            etiquetteHero: hero,
+          );
+        },
+      ),
+
       // --- coquille a onglets -----------------------------------------
       StatefulShellRoute.indexedStack(
         parentNavigatorKey: _cleRacine,
@@ -117,7 +135,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: Routes.cheminAccueil,
                 name: Routes.accueil,
-                builder: (context, etat) => const HomeScreen(),
+                builder: (context, etat) => const AccueilScreen(),
               ),
             ],
           ),
@@ -126,14 +144,19 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: Routes.cheminRecherche,
                 name: Routes.recherche,
-                builder: (context, etat) => const PlaceholderScreen(
-                  titre: 'Recherche',
-                  etape: 'Etape 3',
-                  icone: Icons.search_rounded,
-                  description:
-                      'Le catalogue public, les filtres par categorie et '
-                      'la recherche par localisation arrivent ici.',
-                ),
+                builder: (context, etat) {
+                  final parametres = etat.uri.queryParameters;
+                  return RechercheScreen(
+                    // Cle sur la categorie : changer de categorie depuis
+                    // l'accueil doit RECONSTRUIRE l'ecran, sinon
+                    // `initState` ne rejoue pas et la recherche garde les
+                    // criteres precedents.
+                    key: ValueKey(parametres['categorie'] ?? 'tout'),
+                    categorieInitiale:
+                        int.tryParse(parametres['categorie'] ?? ''),
+                    nomCategorie: parametres['nom'],
+                  );
+                },
               ),
             ],
           ),
