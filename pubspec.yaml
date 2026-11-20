@@ -12,7 +12,7 @@ dependencies:
   cupertino_icons: ^1.0.8
 
   # --- etat ------------------------------------------------------------
-  # Riverpod : providers typés, verifies a la compilation, testables sans
+  # Riverpod : providers types, verifies a la compilation, testables sans
   # widget. Choisi plutot que Bloc pour la concision a cette taille.
   flutter_riverpod: ^2.6.1
 
@@ -28,25 +28,28 @@ dependencies:
   # Les jetons vont dans le trousseau du systeme, jamais dans les
   # preferences en clair (regle du guide d'integration).
   flutter_secure_storage: ^9.2.2
-  shared_preferences: ^2.3.3
 
   # --- interface --------------------------------------------------------
   google_fonts: ^6.2.1
-  cached_network_image: ^3.4.1
-  shimmer: ^3.0.0
 
   # --- animations -------------------------------------------------------
   # flutter_animate : enchainements declaratifs (.fadeIn().slideY()),
   # bien plus lisibles qu'un AnimationController par effet.
   flutter_animate: ^4.5.2
-  animations: ^2.0.11
 
-  # --- temps reel -------------------------------------------------------
-  web_socket_channel: ^3.0.1
-
-  # --- divers -----------------------------------------------------------
-  intl: ^0.19.0
-  image_picker: ^1.1.2
+  # ----------------------------------------------------------------------
+  # AJOUTES A LEUR ETAPE, PAS AVANT.
+  #
+  # Chaque paquet avec du code natif allonge la compilation Android et,
+  # sur une connexion lente, peut la faire echouer : `image_picker`
+  # epinglait a lui seul une SECONDE version du plugin Kotlin (2.3.20 en
+  # plus de la 2.4.0 du projet), dont le telechargement expirait.
+  #
+  #   etape 3 : cached_network_image, shimmer   (images et squelettes)
+  #   etape 4 : image_picker                    (photos d'annonces)
+  #   etape 6 : web_socket_channel              (messagerie temps reel)
+  #   etape 8 : intl                            (dates et montants)
+  # ----------------------------------------------------------------------
 
 dev_dependencies:
   flutter_test:
