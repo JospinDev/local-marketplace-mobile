@@ -64,13 +64,18 @@ class AuthRepository {
       sansJeton: true,
     ) as Map<String, dynamic>;
 
-    final verification = reponse['verification_email_requise'] as bool? ?? false;
+    // Nom de champ EXACT renvoye par le serveur. Il avait ete lu a
+    // l'envers (`verification_email_requise`), ce qui donnait toujours
+    // `null` puis `false` : un compte cree avec email etait traite comme
+    // un compte sans email, et l'ecran de saisie du code n'apparaissait
+    // jamais. Les deux mots sont inverses, l'erreur est invisible a la
+    // lecture — d'ou ce commentaire.
+    final verification =
+        reponse['email_verification_requise'] as bool? ?? false;
 
-    // Sans email a verifier, le serveur renvoie deja les jetons : on
-    // enchaine directement sur l'accueil sans redemander une connexion.
-    if (!verification) {
-      await _memoriserJetons(reponse);
-    }
+    // `/auth/register/` ne renvoie AUCUN jeton, dans aucun des deux cas :
+    // son message invite a se connecter. C'est donc l'appelant qui
+    // enchaine sur une connexion, jamais ce depot.
 
     return ResultatInscription(
       verificationRequise: verification,
