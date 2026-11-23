@@ -13,7 +13,10 @@ import '../../../core/widgets/etats.dart';
 import '../../../core/widgets/glass_card.dart';
 import '../../../core/widgets/reseau_image.dart';
 import '../../../core/widgets/shimmer_box.dart';
+import '../../../core/routing/routes.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../../favoris/presentation/widgets/bouton_favori.dart';
+import '../../messagerie/providers/messagerie_providers.dart';
 import '../domain/produit.dart';
 import '../providers/catalogue_providers.dart';
 
@@ -474,13 +477,64 @@ class _CarteVendeur extends StatelessWidget {
 }
 
 /// Barre d'action collee en bas.
-class _BarreAction extends StatelessWidget {
+class _BarreAction extends ConsumerStatefulWidget {
   const _BarreAction({required this.produit});
 
   final Produit produit;
 
   @override
+  ConsumerState<_BarreAction> createState() => _BarreActionState();
+}
+
+class _BarreActionState extends ConsumerState<_BarreAction> {
+  bool _ouvertureEnCours = false;
+
+  /// Ouvre — ou retrouve — la conversation sur ce produit.
+  ///
+  /// Le serveur est idempotent sur le trio acheteur / vendeur / produit :
+  /// reappuyer sur « Contacter » ramene la meme discussion au lieu d'en
+  /// creer une seconde.
+  Future<void> _contacter() async {
+    if (_ouvertureEnCours) return;
+
+    if (!ref.read(authProvider).estConnecte) {
+      AppFeedback.info(context, 'Connectez-vous pour ecrire au vendeur.');
+      context.pushNamed(Routes.connexion);
+      return;
+    }
+
+    final moi = ref.read(utilisateurProvider);
+    if (moi != null && moi.id == widget.produit.vendeur?.id) {
+      AppFeedback.attention(
+        context,
+        'Vous ne pouvez pas vous ecrire a vous-meme sur votre annonce.',
+      );
+      return;
+    }
+
+    setState(() => _ouvertureEnCours = true);
+    try {
+      final conversation = await ref
+          .read(messagerieRepositoryProvider)
+          .ouvrir(produitId: widget.produit.id);
+
+      if (!mounted) return;
+      // La liste des conversations doit connaitre la nouvelle entree.
+      ref.read(conversationsProvider.notifier).charger();
+      context.pushNamed(
+        Routes.conversation,
+        pathParameters: {'id': '${conversation.id}'},
+      );
+    } catch (erreur) {
+      if (mounted) AppFeedback.erreur(context, '$erreur');
+    } finally {
+      if (mounted) setState(() => _ouvertureEnCours = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final produit = widget.produit;
     final theme = Theme.of(context);
     final sombre = theme.brightness == Brightness.dark;
 
@@ -503,10 +557,8 @@ class _BarreAction extends StatelessWidget {
               style: StyleBouton.secondaire,
               icone: Icons.chat_bubble_outline_rounded,
               compact: true,
-              onPressed: () => AppFeedback.info(
-                context,
-                'La messagerie arrive a l\'etape 6.',
-              ),
+              enChargement: _ouvertureEnCours,
+              onPressed: _contacter,
             ),
           ),
           const SizedBox(width: Espaces.xs),

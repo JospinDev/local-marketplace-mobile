@@ -20,8 +20,8 @@ HTTP.
 | 2 | Mon compte (profil + vitrine) | ✅ livré |
 | 3 | Catalogue public, recherche, fiche produit | ✅ livré |
 | 4 | Mes annonces, stock, images | ✅ livré |
-| 5 | Favoris et vendeurs suivis | ⏳ à venir |
-| 6 | Messagerie temps réel | ⏳ à venir |
+| 5 | Favoris et vendeurs suivis | ✅ livré |
+| 6 | Messagerie temps réel (WebSocket) | ✅ livré |
 | 7–11 | Réservations, ventes, avis, tableau de bord, notifications | ⏳ à venir |
 
 ---

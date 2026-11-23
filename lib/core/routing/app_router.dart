@@ -13,10 +13,11 @@ import '../../features/annonces/presentation/editeur_annonce_screen.dart';
 import '../../features/annonces/presentation/mes_annonces_screen.dart';
 import '../../features/catalogue/presentation/accueil_screen.dart';
 import '../../features/favoris/presentation/mes_listes_screen.dart';
+import '../../features/messagerie/presentation/conversation_screen.dart';
+import '../../features/messagerie/presentation/conversations_screen.dart';
 import '../../features/catalogue/presentation/produit_detail_screen.dart';
 import '../../features/catalogue/presentation/recherche_screen.dart';
 import '../../features/shell/main_shell.dart';
-import '../../features/shell/placeholder_screen.dart';
 import '../theme/app_theme.dart';
 import 'routes.dart';
 
@@ -133,6 +134,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _cleRacine,
         builder: (context, etat) => const MesListesScreen(),
       ),
+      // Hors de la coquille a onglets : une conversation occupe tout
+      // l'ecran, la barre du bas volerait de la place au clavier.
+      GoRoute(
+        path: Routes.cheminConversation,
+        name: Routes.conversation,
+        parentNavigatorKey: _cleRacine,
+        builder: (context, etat) => ConversationScreen(
+          conversationId: int.tryParse(etat.pathParameters['id'] ?? '') ?? 0,
+        ),
+      ),
       GoRoute(
         path: Routes.cheminNouvelleAnnonce,
         name: Routes.nouvelleAnnonce,
@@ -198,14 +209,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: Routes.cheminMessages,
                 name: Routes.messages,
-                builder: (context, etat) => const PlaceholderScreen(
-                  titre: 'Messages',
-                  etape: 'Etape 6',
-                  icone: Icons.chat_bubble_rounded,
-                  description:
-                      'Les discussions avec les vendeurs, en temps reel '
-                      'par WebSocket.',
-                ),
+                builder: (context, etat) => const ConversationsScreen(),
               ),
             ],
           ),

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_bottom_nav.dart';
+import '../messagerie/providers/messagerie_providers.dart';
 
 /// Coquille de l'application : la barre basse reste en place pendant que
 /// le contenu change.
@@ -11,7 +13,7 @@ import '../../core/widgets/app_bottom_nav.dart';
 /// PAR onglet : on peut descendre dans une fiche produit, passer aux
 /// messages, revenir — et retrouver la fiche. C'est le comportement
 /// qu'attendent les gens, et le reproduire a la main est laborieux.
-class MainShell extends StatelessWidget {
+class MainShell extends ConsumerWidget {
   const MainShell({super.key, required this.coquille});
 
   final StatefulNavigationShell coquille;
@@ -51,7 +53,7 @@ class MainShell extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: AnimatedSwitcher(
         duration: Mouvements.normal,
@@ -71,6 +73,15 @@ class MainShell extends StatelessWidget {
         index: coquille.currentIndex,
         onChange: _changer,
         elements: _elements,
+        // Onglet 3 = Messages. La pastille se tait pendant le chargement
+        // et en cas d'erreur : annoncer « 0 » a tort serait pire que de
+        // ne rien annoncer.
+        badges: {
+          3: ref.watch(messagesNonLusProvider).maybeWhen(
+                data: (nombre) => nombre,
+                orElse: () => 0,
+              ),
+        },
       ),
     );
   }

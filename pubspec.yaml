@@ -37,6 +37,7 @@ dependencies:
   # bien plus lisibles qu'un AnimationController par effet.
   flutter_animate: ^4.5.2
   image_picker: ^1.2.4
+  web_socket_channel: ^3.0.3
 
   # ----------------------------------------------------------------------
   # AJOUTES A LEUR ETAPE, PAS AVANT.
