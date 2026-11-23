@@ -174,7 +174,15 @@ class AccountScreen extends ConsumerWidget {
                 ),
               ).animate(delay: 280.ms).fadeIn().slideY(begin: 0.15),
 
-              const SizedBox(height: Espaces.xxl),
+              const SizedBox(height: Espaces.xl),
+              AppButton(
+                libelle: 'Mes favoris et vendeurs suivis',
+                style: StyleBouton.secondaire,
+                icone: Icons.favorite_border_rounded,
+                onPressed: () => context.pushNamed(Routes.mesListes),
+              ).animate(delay: 300.ms).fadeIn(),
+
+              const SizedBox(height: Espaces.md),
 
               AppButton(
                 libelle: 'Se deconnecter',

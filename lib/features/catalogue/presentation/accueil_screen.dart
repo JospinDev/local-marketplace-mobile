@@ -11,6 +11,7 @@ import '../../../core/widgets/etats.dart';
 import '../../../core/widgets/gradient_background.dart';
 import '../../../core/widgets/shimmer_box.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../favoris/providers/favoris_providers.dart';
 import '../domain/categorie.dart';
 import '../domain/produit.dart';
 import '../providers/catalogue_providers.dart';
@@ -56,6 +57,25 @@ class AccueilScreen extends ConsumerWidget {
                     children: [
                       const BrandLockup(taille: 30),
                       const Spacer(),
+                      // Les favoris n'ont plus d'onglet depuis que
+                      // « Vendre » a pris sa place : le coeur de
+                      // l'en-tete y conduit, avec une pastille quand un
+                      // prix a bouge.
+                      Consumer(
+                        builder: (context, ref, _) {
+                          final alertes = ref.watch(
+                            favorisProvider.select(
+                              (e) => e.avecAlerte.length,
+                            ),
+                          );
+                          return _BoutonRond(
+                            icone: Icons.favorite_border_rounded,
+                            pastille: alertes,
+                            onTap: () => context.pushNamed(Routes.mesListes),
+                          );
+                        },
+                      ),
+                      const SizedBox(width: Espaces.xs),
                       _BoutonRond(
                         icone: Icons.notifications_none_rounded,
                         onTap: () => context.goNamed(Routes.compte),
@@ -381,7 +401,7 @@ class _Carrousel extends StatelessWidget {
             ),
           ),
           SizedBox(
-            height: 268,
+            height: 284,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: Espaces.ecran),
@@ -452,7 +472,7 @@ class _SqueletteAccueil extends StatelessWidget {
                 child: ShimmerBox(hauteur: 20, largeur: 150),
               ),
               SizedBox(
-                height: 268,
+                height: 284,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(
@@ -476,10 +496,17 @@ class _SqueletteAccueil extends StatelessWidget {
 }
 
 class _BoutonRond extends StatelessWidget {
-  const _BoutonRond({required this.icone, required this.onTap});
+  const _BoutonRond({
+    required this.icone,
+    required this.onTap,
+    this.pastille = 0,
+  });
 
   final IconData icone;
   final VoidCallback onTap;
+
+  /// Nombre affiche dans la pastille ; 0 = pas de pastille.
+  final int pastille;
 
   @override
   Widget build(BuildContext context) {
@@ -501,7 +528,45 @@ class _BoutonRond extends StatelessWidget {
                   : AppColors.bordureClaire,
             ),
           ),
-          child: Icon(icone, size: 20),
+          child: Stack(
+            alignment: Alignment.center,
+            clipBehavior: Clip.none,
+            children: [
+              Icon(icone, size: 20),
+              if (pastille > 0)
+                Positioned(
+                  top: 6,
+                  right: 6,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 1,
+                    ),
+                    constraints: const BoxConstraints(minWidth: 15),
+                    decoration: BoxDecoration(
+                      color: AppColors.or,
+                      borderRadius: BorderRadius.circular(Rayons.pilule),
+                      border: Border.all(
+                        color: sombre
+                            ? AppColors.encreSurface
+                            : AppColors.blanc,
+                        width: 1.4,
+                      ),
+                    ),
+                    child: Text(
+                      pastille > 9 ? '9+' : '$pastille',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 8.5,
+                        height: 1.3,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.encre,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );

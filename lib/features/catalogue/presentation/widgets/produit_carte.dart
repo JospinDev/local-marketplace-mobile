@@ -5,6 +5,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/formats.dart';
 import '../../../../core/widgets/brand_mark.dart';
 import '../../../../core/widgets/reseau_image.dart';
+import '../../../favoris/presentation/widgets/bouton_favori.dart';
 import '../../domain/produit.dart';
 
 /// Carte produit de la grille.
@@ -76,12 +77,20 @@ class _ProduitCarteState extends State<ProduitCarte> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // ----------------------------------------------- visuel
-              Stack(
-                children: [
-                  Hero(
-                    tag: '${widget.etiquetteHero}-produit-${produit.id}',
-                    child: AspectRatio(
-                      aspectRatio: 1.08,
+              //
+              // `Expanded` et non `AspectRatio` : l'image absorbe la
+              // place qui reste apres le texte. Avec un ratio fige, la
+              // somme image + texte pouvait depasser la hauteur de la
+              // cellule de grille, et Flutter affichait la bande jaune
+              // « BOTTOM OVERFLOWED BY 21 PIXELS ». Ici c'est l'image qui
+              // cede — elle est en `BoxFit.cover`, donc elle reste belle
+              // a toutes les hauteurs.
+              Expanded(
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Hero(
+                      tag: '${widget.etiquetteHero}-produit-${produit.id}',
                       child: ReseauImage(
                         url: produit.imageAffichee?.url,
                         rayon: const BorderRadius.vertical(
@@ -89,49 +98,62 @@ class _ProduitCarteState extends State<ProduitCarte> {
                         ),
                       ),
                     ),
-                  ),
 
-                  if (indisponible)
-                    Positioned.fill(
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: AppColors.encre.withValues(alpha: 0.55),
-                          borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(Rayons.md),
+                    if (indisponible)
+                      Positioned.fill(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: AppColors.encre.withValues(alpha: 0.55),
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(Rayons.md),
+                            ),
                           ),
-                        ),
-                        child: const Center(
-                          child: Etiquette(
-                            texte: 'Rupture',
-                            couleur: AppColors.erreur,
-                            icone: Icons.remove_shopping_cart_outlined,
+                          child: const Center(
+                            child: Etiquette(
+                              texte: 'Rupture',
+                              couleur: AppColors.erreur,
+                              icone: Icons.remove_shopping_cart_outlined,
+                            ),
                           ),
                         ),
                       ),
-                    ),
 
-                  if (produit.estMisEnAvant && !indisponible)
-                    const Positioned(
-                      top: Espaces.xs,
-                      left: Espaces.xs,
-                      child: _Pastille(
-                        texte: 'Mis en avant',
-                        icone: Icons.star_rounded,
-                        degrade: AppColors.degradeOr,
+                    if (produit.estMisEnAvant && !indisponible)
+                      const Positioned(
+                        top: Espaces.xs,
+                        left: Espaces.xs,
+                        child: _Pastille(
+                          texte: 'Mis en avant',
+                          icone: Icons.star_rounded,
+                          degrade: AppColors.degradeOr,
+                        ),
                       ),
-                    ),
 
-                  if (produit.distanceKm != null)
+                    // Le coeur va en BAS a droite : le coin haut est
+                    // deja pris par la distance, et deux pastilles
+                    // superposees seraient illisibles.
                     Positioned(
-                      top: Espaces.xs,
+                      bottom: Espaces.xs,
                       right: Espaces.xs,
-                      child: _Pastille(
-                        texte: Formats.distance(produit.distanceKm),
-                        icone: Icons.near_me_rounded,
-                        degrade: AppColors.degradeMarque,
+                      child: BoutonFavori(
+                        produitId: produit.id,
+                        taille: 32,
+                        surImage: true,
                       ),
                     ),
-                ],
+
+                    if (produit.distanceKm != null)
+                      Positioned(
+                        top: Espaces.xs,
+                        right: Espaces.xs,
+                        child: _Pastille(
+                          texte: Formats.distance(produit.distanceKm),
+                          icone: Icons.near_me_rounded,
+                          degrade: AppColors.degradeMarque,
+                        ),
+                      ),
+                  ],
+                ),
               ),
 
               // ---------------------------------------------- contenu
@@ -154,11 +176,18 @@ class _ProduitCarteState extends State<ProduitCarte> {
                       ),
                     const SizedBox(height: 3),
 
-                    // Hauteur fixe sur deux lignes : sans cela, une carte
-                    // a titre court et une a titre long n'ont pas la meme
-                    // hauteur et la grille devient irreguliere.
+                    // Deux lignes de haut, TOUJOURS : sans cela, une
+                    // carte a titre court et une a titre long n'ont pas la
+                    // meme hauteur et la grille devient irreguliere.
+                    //
+                    // La hauteur suit l'agrandissement de texte du
+                    // systeme. Figee a 38, elle convenait a l'echelle 1.0
+                    // et rognait le titre des que la personne agrandissait
+                    // la police — un reglage d'accessibilite qu'on ne doit
+                    // pas casser.
                     SizedBox(
-                      height: 38,
+                      height:
+                          MediaQuery.textScalerOf(context).scale(13.5) * 2.5,
                       child: Text(
                         produit.titre,
                         maxLines: 2,

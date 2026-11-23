@@ -12,6 +12,7 @@ import '../../features/auth/providers/auth_provider.dart';
 import '../../features/annonces/presentation/editeur_annonce_screen.dart';
 import '../../features/annonces/presentation/mes_annonces_screen.dart';
 import '../../features/catalogue/presentation/accueil_screen.dart';
+import '../../features/favoris/presentation/mes_listes_screen.dart';
 import '../../features/catalogue/presentation/produit_detail_screen.dart';
 import '../../features/catalogue/presentation/recherche_screen.dart';
 import '../../features/shell/main_shell.dart';
@@ -126,6 +127,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
 
+      GoRoute(
+        path: Routes.cheminMesListes,
+        name: Routes.mesListes,
+        parentNavigatorKey: _cleRacine,
+        builder: (context, etat) => const MesListesScreen(),
+      ),
       GoRoute(
         path: Routes.cheminNouvelleAnnonce,
         name: Routes.nouvelleAnnonce,

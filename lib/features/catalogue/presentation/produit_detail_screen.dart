@@ -13,6 +13,7 @@ import '../../../core/widgets/etats.dart';
 import '../../../core/widgets/glass_card.dart';
 import '../../../core/widgets/reseau_image.dart';
 import '../../../core/widgets/shimmer_box.dart';
+import '../../favoris/presentation/widgets/bouton_favori.dart';
 import '../domain/produit.dart';
 import '../providers/catalogue_providers.dart';
 
@@ -127,11 +128,13 @@ class _Contenu extends StatelessWidget {
                   ? AppColors.encre
                   : AppColors.blanc,
           leading: const _BoutonFlottant(icone: Icons.arrow_back_rounded),
-          actions: const [
-            _BoutonFlottant(icone: Icons.share_outlined, action: true),
-            SizedBox(width: Espaces.xs),
-            _BoutonFlottant(icone: Icons.favorite_border_rounded, action: true),
-            SizedBox(width: Espaces.sm),
+          actions: [
+            const _BoutonFlottant(icone: Icons.share_outlined, action: true),
+            const SizedBox(width: Espaces.xs),
+            Center(
+              child: BoutonFavori(produitId: produit.id, surImage: true),
+            ),
+            const SizedBox(width: Espaces.sm),
           ],
           flexibleSpace: FlexibleSpaceBar(
             background: Stack(

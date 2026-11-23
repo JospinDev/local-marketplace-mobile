@@ -261,8 +261,10 @@ class _Corps extends ConsumerWidget {
     crossAxisCount: 2,
     mainAxisSpacing: Espaces.sm,
     crossAxisSpacing: Espaces.sm,
-    // Hauteur calee sur la carte : image (ratio 1.08) + bloc de texte.
-    childAspectRatio: 0.63,
+    // Le bloc de texte occupe environ 120 px, le reste revient a
+    // l'image. La carte ne deborde plus meme si ce calcul est imparfait :
+    // son image est elastique.
+    childAspectRatio: 0.60,
   );
 }
 
