@@ -204,7 +204,7 @@ class ConversationNotifier extends StateNotifier<EtatConversation> {
     state = state.copyWith(chargement: true, viderErreur: true);
     try {
       final conversation = await _depot.conversation(_conversationId);
-      final page = await _depot.messages(_conversationId);
+      final page = await _depot.messages(_conversationId, moiId: _moiId);
       if (!mounted) return;
       state = EtatConversation(
         conversation: conversation,

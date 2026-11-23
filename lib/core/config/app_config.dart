@@ -34,7 +34,14 @@ class AppConfig {
   static String get baseUrl => '$origine/api/v1';
 
   /// Racine des WebSocket (modules 7 et 12).
-  static String get wsUrl => origine.replaceFirst(RegExp(r'^http'), 'ws');
+  ///
+  /// La barre oblique finale est retiree : `http://hote:8000/` donnerait
+  /// `ws://hote:8000//ws/conversations/1/`, que le routeur de Channels ne
+  /// reconnait pas — la connexion serait refusee sans message clair.
+  static String get wsUrl {
+    final base = origine.replaceFirst(RegExp(r'^http'), 'ws');
+    return base.endsWith('/') ? base.substring(0, base.length - 1) : base;
+  }
 
   /// Les listes de l'API sont paginees a 20 par defaut, 100 au maximum.
   static const int taillePage = 20;

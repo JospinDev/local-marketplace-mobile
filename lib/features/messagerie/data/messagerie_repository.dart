@@ -62,14 +62,29 @@ class MessagerieRepository {
   }
 
   // ------------------------------------------------------------ messages
-  Future<PageResultats<Message>> messages(int conversationId, {
+  /// Historique d'une conversation, du PLUS RECENT au plus ancien.
+  ///
+  /// Le serveur trie par `created_at` CROISSANT (le plus ancien d'abord).
+  /// L'ecran affiche une liste inversee, ou l'indice 0 est le bas — donc
+  /// le message le plus recent. On retourne donc la page ici, une fois,
+  /// plutot que de laisser chaque appelant s'en souvenir : c'est ce qui
+  /// manquait, et l'historique s'affichait a l'envers.
+  Future<PageResultats<Message>> messages(
+    int conversationId, {
     int page = 1,
+    int? moiId,
   }) async {
     final reponse = await _api.get(
       '/conversations/$conversationId/messages/',
       parametres: {'page': page},
     );
-    return PageResultats.depuisJson(reponse, Message.depuisJson);
+    final resultat = PageResultats.depuisJson(
+      reponse,
+      (json) => Message.depuisJson(json, moiId: moiId),
+    );
+    return resultat.avecElements(
+      resultat.elements.reversed.toList(growable: false),
+    );
   }
 
   Future<Message> envoyer(int conversationId, String contenu) async {

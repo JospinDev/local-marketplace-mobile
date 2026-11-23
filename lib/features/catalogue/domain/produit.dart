@@ -307,6 +307,15 @@ class PageResultats<T> {
 
   bool get aUneSuite => suivante != null;
 
+  /// Meme page, autres elements : sert a reordonner ou filtrer sans
+  /// perdre la pagination.
+  PageResultats<T> avecElements(List<T> nouveaux) => PageResultats<T>(
+        elements: nouveaux,
+        total: total,
+        suivante: suivante,
+        precedente: precedente,
+      );
+
   static PageResultats<T> depuisJson<T>(
     dynamic json,
     T Function(Map<String, dynamic>) lire,

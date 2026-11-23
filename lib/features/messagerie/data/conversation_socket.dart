@@ -118,6 +118,9 @@ class ConversationSocket {
         cancelOnError: true,
       );
     } catch (erreur) {
+      if (kDebugMode) {
+        debugPrint('[ws $conversationId] echec de connexion : $erreur');
+      }
       _canal = null;
       _surCoupure(erreur);
     }
@@ -141,6 +144,13 @@ class ConversationSocket {
   void _surCoupure(Object? erreur) {
     // Le code se lit AVANT de lacher le canal, sinon il est perdu.
     final code = _canal?.closeCode;
+
+    if (kDebugMode) {
+      debugPrint(
+        '[ws $conversationId] coupure code=$code '
+        'raison=${_canal?.closeReason} erreur=$erreur',
+      );
+    }
 
     _abonnement?.cancel();
     _abonnement = null;
