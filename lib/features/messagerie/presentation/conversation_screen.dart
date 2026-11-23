@@ -126,9 +126,20 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
   AppBar _barre(BuildContext context, EtatConversation etat, bool sombre) {
     final autre = etat.conversation?.interlocuteur;
 
+    final idAutre = autre?.id;
+
     return AppBar(
       titleSpacing: 0,
-      title: Row(
+      title: InkWell(
+        // L'en-tete mene a la boutique : savoir ce que vend la personne a
+        // qui on parle est la question qui vient tout de suite apres.
+        onTap: idAutre == null || idAutre == 0
+            ? null
+            : () => context.pushNamed(
+                  Routes.boutique,
+                  pathParameters: {'id': '$idAutre'},
+                ),
+        child: Row(
         children: [
           Container(
             width: 34,
@@ -181,6 +192,7 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
             ),
           ),
         ],
+        ),
       ),
       actions: [
         PopupMenuButton<String>(

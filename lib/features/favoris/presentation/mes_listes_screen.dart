@@ -414,8 +414,19 @@ class _LigneVendeur extends StatelessWidget {
     final theme = Theme.of(context);
 
     return SolidCard(
-      padding: const EdgeInsets.all(Espaces.sm),
-      child: Row(
+      padding: EdgeInsets.zero,
+      // Toute la ligne ouvre la boutique du vendeur : on y voit ses
+      // annonces et rien d'autre. Le bouton « suivre » garde son propre
+      // geste, il ne declenche donc pas l'ouverture.
+      child: InkWell(
+        borderRadius: BorderRadius.circular(Rayons.md),
+        onTap: () => context.pushNamed(
+          Routes.boutique,
+          pathParameters: {'id': '${vendeur.vendeurId}'},
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(Espaces.sm),
+          child: Row(
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(Rayons.sm),
@@ -476,9 +487,16 @@ class _LigneVendeur extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: Espaces.xs),
-          BoutonSuivre(vendeurId: vendeur.vendeurId, compact: true),
-        ],
+              const SizedBox(width: Espaces.xs),
+              BoutonSuivre(vendeurId: vendeur.vendeurId, compact: true),
+              Icon(
+                Icons.chevron_right_rounded,
+                size: 18,
+                color: theme.textTheme.bodySmall?.color,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

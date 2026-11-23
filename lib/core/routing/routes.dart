@@ -25,6 +25,7 @@ class Routes {
   static const modifierAnnonce = 'modifier-annonce';
   static const mesListes = 'mes-listes';
   static const conversation = 'conversation';
+  static const boutique = 'boutique';
 
   // --- chemins ----------------------------------------------------------
   static const cheminDemarrage = '/';
@@ -43,4 +44,5 @@ class Routes {
   static const cheminModifierAnnonce = '/annonce/:id/modifier';
   static const cheminMesListes = '/mes-listes';
   static const cheminConversation = '/conversation/:id';
+  static const cheminBoutique = '/boutique/:id';
 }

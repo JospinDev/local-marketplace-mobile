@@ -15,6 +15,7 @@ import '../../features/catalogue/presentation/accueil_screen.dart';
 import '../../features/favoris/presentation/mes_listes_screen.dart';
 import '../../features/messagerie/presentation/conversation_screen.dart';
 import '../../features/messagerie/presentation/conversations_screen.dart';
+import '../../features/vendeurs/presentation/boutique_vendeur_screen.dart';
 import '../../features/catalogue/presentation/produit_detail_screen.dart';
 import '../../features/catalogue/presentation/recherche_screen.dart';
 import '../../features/shell/main_shell.dart';
@@ -136,6 +137,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       // Hors de la coquille a onglets : une conversation occupe tout
       // l'ecran, la barre du bas volerait de la place au clavier.
+      // Boutique publique : accessible sans compte, comme le catalogue.
+      GoRoute(
+        path: Routes.cheminBoutique,
+        name: Routes.boutique,
+        parentNavigatorKey: _cleRacine,
+        builder: (context, etat) => BoutiqueVendeurScreen(
+          vendeurId: int.tryParse(etat.pathParameters['id'] ?? '') ?? 0,
+        ),
+      ),
       GoRoute(
         path: Routes.cheminConversation,
         name: Routes.conversation,

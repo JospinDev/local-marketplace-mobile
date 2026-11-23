@@ -407,6 +407,12 @@ class _CarteVendeur extends StatelessWidget {
     final theme = Theme.of(context);
 
     return SolidCard(
+      // Mene a la boutique : on y voit toutes ses annonces, ce qui est la
+      // question suivante quand une premiere a plu.
+      onTap: () => context.pushNamed(
+        Routes.boutique,
+        pathParameters: {'id': '${vendeur.id}'},
+      ),
       child: Row(
         children: [
           ClipRRect(

@@ -22,6 +22,7 @@ HTTP.
 | 4 | Mes annonces, stock, images | ✅ livré |
 | 5 | Favoris et vendeurs suivis | ✅ livré |
 | 6 | Messagerie temps réel (WebSocket) | ✅ livré |
+| — | Boutique publique d'un vendeur | ✅ livré |
 | 7–11 | Réservations, ventes, avis, tableau de bord, notifications | ⏳ à venir |
 
 ---
