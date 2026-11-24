@@ -13,6 +13,9 @@ import '../../../core/widgets/gradient_background.dart';
 import '../../../core/widgets/reseau_image.dart';
 import '../../../core/widgets/shimmer_box.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../avis/presentation/widgets/avis_carte.dart';
+import '../../avis/presentation/widgets/etoiles.dart';
+import '../../avis/providers/avis_providers.dart';
 import '../../catalogue/presentation/widgets/produit_carte.dart';
 import '../../favoris/presentation/widgets/bouton_favori.dart';
 import '../../messagerie/providers/messagerie_providers.dart';
@@ -111,6 +114,8 @@ class _Contenu extends ConsumerWidget {
                 ),
               ),
             ),
+          SliverToBoxAdapter(child: _Avis(vendeurId: vendeur.id)),
+
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(
@@ -564,6 +569,80 @@ class _Squelette extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+
+/// Avis publics du vendeur, avec la repartition des notes.
+///
+/// Masquee tant qu'il n'y a aucun avis : une section « 0 avis » avec des
+/// barres vides n'apprend rien et occupe la place des annonces.
+class _Avis extends ConsumerWidget {
+  const _Avis({required this.vendeurId});
+
+  final int vendeurId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final donnees = ref.watch(avisVendeurProvider(vendeurId));
+
+    return donnees.maybeWhen(
+      data: (resultat) {
+        final (avis, reputation) = resultat;
+        if (reputation.estVide && avis.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(
+            Espaces.ecran,
+            Espaces.lg,
+            Espaces.ecran,
+            0,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.star_rounded,
+                      size: 18, color: AppColors.or),
+                  const SizedBox(width: Espaces.xs),
+                  Text(
+                    'Avis',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w700),
+                  ),
+                  const Spacer(),
+                  NoteCompacte(
+                    note: reputation.noteVendeur,
+                    nombre: reputation.nombreEvaluations,
+                  ),
+                ],
+              ),
+              const SizedBox(height: Espaces.xs),
+              if (reputation.repartition.isNotEmpty)
+                RepartitionNotes(
+                  repartition: reputation.repartition,
+                  total: reputation.nombreEvaluations,
+                ),
+              for (final avisUnitaire in avis.take(3))
+                Padding(
+                  padding: const EdgeInsets.only(top: Espaces.xs),
+                  // `montrerProduit` : sur une boutique, savoir quel
+                  // article a ete note est utile ; le nom du vendeur, non.
+                  child: AvisCarte(avis: avisUnitaire),
+                ),
+            ],
+          ),
+        );
+      },
+      // Chargement comme erreur : rien. Les avis sont un complement, leur
+      // absence ne doit pas produire d'encart d'echec sur une boutique.
+      orElse: () => const SizedBox.shrink(),
     );
   }
 }

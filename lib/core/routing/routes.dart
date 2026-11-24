@@ -31,6 +31,8 @@ class Routes {
   static const mesVentes = 'mes-ventes';
   static const vente = 'vente';
   static const notifications = 'notifications';
+  static const mesAvis = 'mes-avis';
+  static const tableauBord = 'tableau-bord';
 
   // --- chemins ----------------------------------------------------------
   static const cheminDemarrage = '/';
@@ -55,4 +57,6 @@ class Routes {
   static const cheminMesVentes = '/ventes';
   static const cheminVente = '/ventes/:id';
   static const cheminNotifications = '/notifications';
+  static const cheminMesAvis = '/avis';
+  static const cheminTableauBord = '/tableau-de-bord';
 }

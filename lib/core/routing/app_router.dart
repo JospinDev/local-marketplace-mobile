@@ -15,7 +15,9 @@ import '../../features/catalogue/presentation/accueil_screen.dart';
 import '../../features/favoris/presentation/mes_listes_screen.dart';
 import '../../features/messagerie/presentation/conversation_screen.dart';
 import '../../features/messagerie/presentation/conversations_screen.dart';
+import '../../features/avis/presentation/mes_avis_screen.dart';
 import '../../features/notifications/presentation/notifications_screen.dart';
+import '../../features/tableau_bord/presentation/tableau_bord_screen.dart';
 import '../../features/reservations/presentation/mes_reservations_screen.dart';
 import '../../features/reservations/presentation/reservation_detail_screen.dart';
 import '../../features/vendeurs/presentation/boutique_vendeur_screen.dart';
@@ -142,6 +144,21 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       // Hors de la coquille a onglets : une conversation occupe tout
       // l'ecran, la barre du bas volerait de la place au clavier.
+      GoRoute(
+        path: Routes.cheminMesAvis,
+        name: Routes.mesAvis,
+        parentNavigatorKey: _cleRacine,
+        builder: (context, etat) => MesAvisScreen(
+          ongletInitial:
+              int.tryParse(etat.uri.queryParameters['onglet'] ?? '') ?? 0,
+        ),
+      ),
+      GoRoute(
+        path: Routes.cheminTableauBord,
+        name: Routes.tableauBord,
+        parentNavigatorKey: _cleRacine,
+        builder: (context, etat) => const TableauBordScreen(),
+      ),
       GoRoute(
         path: Routes.cheminNotifications,
         name: Routes.notifications,

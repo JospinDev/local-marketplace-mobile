@@ -31,11 +31,24 @@ void main() {
     scaffold.openDrawer();
     await tester.pumpAndSettle();
 
+    // Le haut du menu, visible sans defiler.
     expect(find.text('Notifications'), findsOneWidget);
-    expect(find.text('Mes annonces'), findsOneWidget);
-    expect(find.text('Mes ventes'), findsOneWidget);
-    expect(find.text('Demandes recues'), findsOneWidget);
     expect(find.text('ACHETER'), findsOneWidget);
+
+    // Le bas, qui exige de defiler : la fenetre de test est courte, et
+    // `ListView` ne construit pas ce qui est hors champ. Faire defiler
+    // verifie au passage que la liste est bien parcourable jusqu'au bout.
+    await tester.dragUntilVisible(
+      find.text('Mes ventes'),
+      find.byType(ListView),
+      const Offset(0, -80),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Mes annonces'), findsOneWidget);
+    expect(find.text('Demandes recues'), findsOneWidget);
+    expect(find.text('Mes ventes'), findsOneWidget);
+    expect(find.text('Tableau de bord'), findsOneWidget);
   });
 
   testWidgets(

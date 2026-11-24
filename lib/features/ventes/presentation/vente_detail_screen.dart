@@ -11,6 +11,7 @@ import '../../../core/widgets/app_feedback.dart';
 import '../../../core/widgets/etats.dart';
 import '../../../core/widgets/glass_card.dart';
 import '../../../core/widgets/gradient_background.dart';
+import '../../avis/presentation/widgets/deposer_avis_feuille.dart';
 import '../../reservations/providers/reservations_providers.dart';
 import '../data/ventes_repository.dart';
 import '../domain/vente.dart';
@@ -381,9 +382,11 @@ class _VenteDetailScreenState extends ConsumerState<VenteDetailScreen> {
           libelle: 'Laisser un avis',
           style: StyleBouton.secondaire,
           icone: Icons.star_outline_rounded,
-          onPressed: () => AppFeedback.info(
+          onPressed: () => ouvrirDeposerAvis(
             context,
-            'Les avis arrivent a l\'etape 9.',
+            venteId: vente.id,
+            titreProduit: vente.titreResume,
+            vendeur: vente.vendeurUsername ?? 'le vendeur',
           ),
         ),
       );

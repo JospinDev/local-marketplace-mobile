@@ -85,6 +85,15 @@ class MenuLateral extends ConsumerWidget {
                     ),
                   ),
                   _Entree(
+                    icone: Icons.star_outline_rounded,
+                    libelle: 'Mes avis',
+                    onTap: () => _aller(
+                      context,
+                      Routes.mesAvis,
+                      parametres: {'onglet': '0'},
+                    ),
+                  ),
+                  _Entree(
                     icone: Icons.favorite_border_rounded,
                     libelle: 'Favoris et vendeurs suivis',
                     pastille: alertes,
@@ -93,6 +102,11 @@ class MenuLateral extends ConsumerWidget {
 
                   const Divider(height: Espaces.lg),
                   const _Rubrique(libelle: 'Vendre'),
+                  _Entree(
+                    icone: Icons.insights_outlined,
+                    libelle: 'Tableau de bord',
+                    onTap: () => _aller(context, Routes.tableauBord),
+                  ),
                   _Entree(
                     icone: Icons.sell_outlined,
                     libelle: 'Mes annonces',
@@ -113,6 +127,15 @@ class MenuLateral extends ConsumerWidget {
                     onTap: () => _aller(
                       context,
                       Routes.mesReservations,
+                      parametres: {'onglet': '1'},
+                    ),
+                  ),
+                  _Entree(
+                    icone: Icons.reviews_outlined,
+                    libelle: 'Avis recus',
+                    onTap: () => _aller(
+                      context,
+                      Routes.mesAvis,
                       parametres: {'onglet': '1'},
                     ),
                   ),

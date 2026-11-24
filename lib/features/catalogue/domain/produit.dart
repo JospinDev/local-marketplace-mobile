@@ -94,26 +94,50 @@ class ImageProduit {
 ///
 /// `null` ne veut PAS dire zero : il veut dire « pas encore d'avis ».
 /// Afficher `0/5` dans ce cas serait un mensonge qui dessert le vendeur.
+/// Reputation : les moyennes ne comptent que les avis VALIDES.
+///
+/// Un avis masque par la moderation ou retire par son auteur n'entre dans
+/// aucune moyenne. C'est le serveur qui applique la regle ; le client ne
+/// recalcule jamais une moyenne a partir d'une liste paginee.
 class Reputation {
   const Reputation({
     this.noteProduit,
     this.noteVendeur,
     this.nombreEvaluations = 0,
+    this.repartition = const {},
   });
 
   final double? noteProduit;
   final double? noteVendeur;
   final int nombreEvaluations;
 
+  /// Nombre d'avis par note, de "1" a "5".
+  ///
+  /// Renseignee uniquement par la vitrine publique d'un vendeur
+  /// (`ReputationVendeurSerializer`). Vide ailleurs, et c'est normal :
+  /// l'affichage doit alors se contenter de la moyenne.
+  final Map<String, int> repartition;
+
   bool get aDesAvis => nombreEvaluations > 0;
+  bool get estVide => nombreEvaluations == 0;
 
   factory Reputation.depuisJson(Map<String, dynamic>? json) {
     if (json == null) return const Reputation();
+
+    final brut = json['repartition'];
+    final repartition = <String, int>{};
+    if (brut is Map) {
+      brut.forEach((cle, valeur) {
+        if (valeur is num) repartition['$cle'] = valeur.toInt();
+      });
+    }
+
     return Reputation(
       noteProduit: (json['note_produit'] as num?)?.toDouble(),
       noteVendeur: (json['note_vendeur'] as num?)?.toDouble(),
       nombreEvaluations:
           (json['nombre_evaluations'] as num?)?.toInt() ?? 0,
+      repartition: repartition,
     );
   }
 }

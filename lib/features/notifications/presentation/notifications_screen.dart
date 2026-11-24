@@ -7,7 +7,6 @@ import '../../../core/routing/routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formats.dart';
-import '../../../core/widgets/app_feedback.dart';
 import '../../../core/widgets/etats.dart';
 import '../../../core/widgets/gradient_background.dart';
 import '../../../core/widgets/shimmer_box.dart';
@@ -168,9 +167,12 @@ class NotificationsScreen extends ConsumerWidget {
       case CibleNotification.utilisateur:
         context.pushNamed(Routes.boutique, pathParameters: {'id': '$id'});
       case CibleNotification.evaluation:
-        // Les avis arrivent a l'etape 9 : on le dit, plutot que de ne
-        // rien faire en silence.
-        AppFeedback.info(context, 'Les avis arrivent a l\'etape 9.');
+        // Un avis recu se consulte dans l'onglet « Recus » : la
+        // notification ne concerne jamais un avis qu'on a soi-meme ecrit.
+        context.pushNamed(
+          Routes.mesAvis,
+          queryParameters: {'onglet': '1'},
+        );
       case CibleNotification.aucune:
         break;
     }

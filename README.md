@@ -28,7 +28,8 @@ HTTP.
 | 11 | Notifications (centre + temps réel) | ✅ livré |
 | — | Bandeau publicitaire administré | ✅ livré |
 | — | Menu latéral + flux infini de l'accueil | ✅ livré |
-| 9–10 | Avis, tableau de bord vendeur | ⏳ à venir |
+| 9 | Avis : deux notes, correction, signalement | ✅ livré |
+| 10 | Tableau de bord vendeur | ✅ livré |
 
 ---
 
