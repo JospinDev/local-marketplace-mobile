@@ -15,6 +15,7 @@ import '../../features/catalogue/presentation/accueil_screen.dart';
 import '../../features/favoris/presentation/mes_listes_screen.dart';
 import '../../features/messagerie/presentation/conversation_screen.dart';
 import '../../features/messagerie/presentation/conversations_screen.dart';
+import '../../features/notifications/presentation/notifications_screen.dart';
 import '../../features/reservations/presentation/mes_reservations_screen.dart';
 import '../../features/reservations/presentation/reservation_detail_screen.dart';
 import '../../features/vendeurs/presentation/boutique_vendeur_screen.dart';
@@ -141,6 +142,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       // Hors de la coquille a onglets : une conversation occupe tout
       // l'ecran, la barre du bas volerait de la place au clavier.
+      GoRoute(
+        path: Routes.cheminNotifications,
+        name: Routes.notifications,
+        parentNavigatorKey: _cleRacine,
+        builder: (context, etat) => const NotificationsScreen(),
+      ),
+
       // Reservations et ventes : hors coquille a onglets, ce sont des
       // ecrans de suivi ou l'on entre et d'ou l'on ressort.
       GoRoute(

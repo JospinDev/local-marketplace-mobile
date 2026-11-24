@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_bottom_nav.dart';
+import 'menu_lateral.dart';
 import '../messagerie/providers/messagerie_providers.dart';
 
 /// Coquille de l'application : la barre basse reste en place pendant que
@@ -55,6 +56,11 @@ class MainShell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
+      // Le tiroir est porte par la coquille, et non par l'accueil : un
+      // seul Scaffold, donc aucune ambiguite sur celui que
+      // `Scaffold.of(context).openDrawer()` ouvre. Il devient aussi
+      // accessible depuis les autres onglets.
+      drawer: const MenuLateral(),
       body: AnimatedSwitcher(
         duration: Mouvements.normal,
         switchInCurve: Mouvements.sortie,

@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../../catalogue/domain/produit.dart';
 import '../data/annonces_repository.dart';
 
@@ -72,8 +73,9 @@ class EtatAnnonces {
 }
 
 class AnnoncesNotifier extends StateNotifier<EtatAnnonces> {
-  AnnoncesNotifier(this._depot) : super(const EtatAnnonces()) {
-    charger();
+  AnnoncesNotifier(this._depot, {required bool connecte})
+      : super(EtatAnnonces(chargement: connecte)) {
+    if (connecte) charger();
   }
 
   final AnnoncesRepository _depot;
@@ -121,12 +123,30 @@ class AnnoncesNotifier extends StateNotifier<EtatAnnonces> {
   }
 }
 
+/// Mes annonces.
+///
+/// `ref.watch(authProvider)` n'est pas decoratif : sans lui, le notifier
+/// survivait a un changement de compte et gardait en memoire les annonces
+/// du compte precedent. On voyait alors, connecte en acheteur, les
+/// annonces d'un vendeur — et la modification repondait `404`, puisque le
+/// serveur, lui, filtre bien sur le proprietaire.
+///
+/// Le meme garde-fou protege toutes les autres listes personnelles
+/// (favoris, reservations, ventes) ; il manquait ici.
 final annoncesProvider =
     StateNotifierProvider<AnnoncesNotifier, EtatAnnonces>((ref) {
-  return AnnoncesNotifier(ref.watch(annoncesRepositoryProvider));
+  final connecte = ref.watch(authProvider).estConnecte;
+  return AnnoncesNotifier(
+    ref.watch(annoncesRepositoryProvider),
+    connecte: connecte,
+  );
 });
 
 /// Stock d'une annonce, charge a la demande.
-final stockProvider = FutureProvider.family<Stock, int>((ref, id) async {
+///
+/// `autoDispose` : sans lui, le stock reste en cache pour toujours, y
+/// compris apres un changement de compte.
+final stockProvider =
+    FutureProvider.autoDispose.family<Stock, int>((ref, id) async {
   return ref.watch(annoncesRepositoryProvider).stock(id);
 });

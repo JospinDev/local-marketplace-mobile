@@ -12,6 +12,9 @@ import '../../../core/widgets/gradient_background.dart';
 import '../../../core/widgets/shimmer_box.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../favoris/providers/favoris_providers.dart';
+import '../../notifications/providers/notifications_providers.dart';
+import '../../publicites/presentation/widgets/bandeau_publicites.dart';
+import '../providers/flux_accueil_provider.dart';
 import '../domain/categorie.dart';
 import '../domain/produit.dart';
 import '../providers/catalogue_providers.dart';
@@ -22,11 +25,44 @@ import 'widgets/produit_carte.dart';
 /// Trois rangees, chargees en parallele : mises en avant, nouveautes,
 /// populaires. Elles viennent de trois routes distinctes du serveur, et
 /// la grille complete est a un appui de la (onglet Recherche).
-class AccueilScreen extends ConsumerWidget {
+class AccueilScreen extends ConsumerStatefulWidget {
   const AccueilScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AccueilScreen> createState() => _AccueilScreenState();
+}
+
+class _AccueilScreenState extends ConsumerState<AccueilScreen> {
+  final _defilement = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _defilement.addListener(_surDefilement);
+  }
+
+  @override
+  void dispose() {
+    _defilement.removeListener(_surDefilement);
+    _defilement.dispose();
+    super.dispose();
+  }
+
+  /// Charge la page suivante AVANT d'atteindre le bas.
+  ///
+  /// 600 pixels d'avance : la page suivante arrive generalement avant que
+  /// le vide soit visible, donc le defilement ne s'interrompt pas. Le
+  /// notifier ignore les appels redondants, inutile de s'en proteger ici.
+  void _surDefilement() {
+    if (!_defilement.hasClients) return;
+    final position = _defilement.position;
+    if (position.pixels >= position.maxScrollExtent - 600) {
+      ref.read(fluxAccueilProvider.notifier).chargerLaSuite();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final utilisateur = ref.watch(utilisateurProvider);
     final accueil = ref.watch(accueilProvider);
@@ -40,9 +76,11 @@ class AccueilScreen extends ConsumerWidget {
           onRefresh: () async {
             ref.invalidate(accueilProvider);
             ref.invalidate(categoriesProvider);
+            ref.read(fluxAccueilProvider.notifier).charger();
             await ref.read(accueilProvider.future);
           },
           child: CustomScrollView(
+            controller: _defilement,
             slivers: [
               // ------------------------------------------- en-tete
               SliverToBoxAdapter(
@@ -55,7 +93,22 @@ class AccueilScreen extends ConsumerWidget {
                   ),
                   child: Row(
                     children: [
-                      const BrandLockup(taille: 30),
+                      // Ouvre le menu lateral : les pages de suivi y sont
+                      // rassemblees, au lieu d'etre dans l'onglet Compte.
+                      Builder(
+                        builder: (context) => _BoutonRond(
+                          icone: Icons.menu_rounded,
+                          // `Scaffold.of(context)` est resolu AU CLIC, et
+                          // non pendant la construction : capturer le
+                          // `ScaffoldState` au moment du build garde une
+                          // reference qui peut devenir caduque quand la
+                          // coquille remplace son sous-arbre, et ouvrir un
+                          // tiroir mort donne un panneau vide.
+                          onTap: () => Scaffold.of(context).openDrawer(),
+                        ),
+                      ),
+                      const SizedBox(width: Espaces.xs),
+                      const BrandLockup(taille: 28),
                       const Spacer(),
                       // Les favoris n'ont plus d'onglet depuis que
                       // « Vendre » a pris sa place : le coeur de
@@ -76,14 +129,31 @@ class AccueilScreen extends ConsumerWidget {
                         },
                       ),
                       const SizedBox(width: Espaces.xs),
-                      _BoutonRond(
-                        icone: Icons.notifications_none_rounded,
-                        onTap: () => context.goNamed(Routes.compte),
+                      // La cloche ouvre le centre de notifications, et sa
+                      // pastille suit le compteur du serveur en direct.
+                      Consumer(
+                        builder: (context, ref, _) {
+                          final nonLues = ref.watch(nonLuesProvider);
+                          return _BoutonRond(
+                            icone: nonLues > 0
+                                ? Icons.notifications_active_rounded
+                                : Icons.notifications_none_rounded,
+                            pastille: nonLues,
+                            onTap: () =>
+                                context.pushNamed(Routes.notifications),
+                          );
+                        },
                       ),
                     ],
                   ),
                 ).animate().fadeIn(duration: 350.ms),
               ),
+
+              // Emplacement publicitaire administre. Il disparait
+              // entierement quand rien n'est publie ou que
+              // l'administration a coupe le bandeau : aucune hauteur
+              // n'est reservee pour rien.
+              const SliverToBoxAdapter(child: BandeauPublicites()),
 
               SliverToBoxAdapter(
                 child: Padding(
@@ -185,6 +255,13 @@ class AccueilScreen extends ConsumerWidget {
                 },
               ),
 
+              // Le catalogue entier prend la suite des carrousels : on
+              // continue a descendre sur la MEME page, au lieu d'avoir a
+              // passer par l'onglet Recherche.
+              const _TitreFlux(),
+              const _GrilleFlux(),
+              const _PiedDeFlux(),
+
               const SliverToBoxAdapter(
                 child: SizedBox(height: Espaces.xxl),
               ),
@@ -193,6 +270,162 @@ class AccueilScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+}
+
+/// Titre du flux, masque tant qu'il n'y a rien a annoncer.
+class _TitreFlux extends ConsumerWidget {
+  const _TitreFlux();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final etat = ref.watch(fluxAccueilProvider);
+    if (etat.produits.isEmpty) return const SliverToBoxAdapter();
+
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          Espaces.ecran,
+          Espaces.lg,
+          Espaces.ecran,
+          Espaces.sm,
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.grid_view_rounded,
+                size: 18, color: AppColors.sarcelle),
+            const SizedBox(width: Espaces.xs),
+            Text(
+              'Tout le catalogue',
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const Spacer(),
+            if (etat.total > 0)
+              Text(
+                '${etat.total}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.sarcelle,
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _GrilleFlux extends ConsumerWidget {
+  const _GrilleFlux();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final etat = ref.watch(fluxAccueilProvider);
+
+    if (etat.chargementInitial) {
+      return const SliverToBoxAdapter(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: Espaces.ecran),
+          child: ShimmerBox(
+            hauteur: 220,
+            rayon: BorderRadius.all(Radius.circular(Rayons.md)),
+          ),
+        ),
+      );
+    }
+
+    if (etat.produits.isEmpty) return const SliverToBoxAdapter();
+
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: Espaces.ecran),
+      sliver: SliverGrid(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: Espaces.sm,
+          crossAxisSpacing: Espaces.sm,
+          // Meme proportion que la recherche : les cartes y ont ete
+          // reglees pour ne pas deborder.
+          childAspectRatio: 0.60,
+        ),
+        delegate: SliverChildBuilderDelegate(
+          childCount: etat.produits.length,
+          (context, index) {
+            final produit = etat.produits[index];
+            return ProduitCarte(
+              produit: produit,
+              etiquetteHero: 'flux',
+              onTap: () => context.pushNamed(
+                Routes.produit,
+                pathParameters: {'id': '${produit.id}'},
+                extra: {'hero': 'flux'},
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+/// Indicateur de chargement, ou mot de la fin quand tout est affiche.
+class _PiedDeFlux extends ConsumerWidget {
+  const _PiedDeFlux();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final etat = ref.watch(fluxAccueilProvider);
+    if (etat.produits.isEmpty) return const SliverToBoxAdapter();
+
+    if (etat.chargementSuite) {
+      return const SliverToBoxAdapter(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: Espaces.lg),
+          child: Center(
+            child: SizedBox(
+              width: 22,
+              height: 22,
+              child: CircularProgressIndicator(strokeWidth: 2.4),
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Une page qui a echoue doit pouvoir etre reessayee sans recharger
+    // tout l'accueil.
+    if (etat.erreur != null) {
+      return SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.all(Espaces.lg),
+          child: Center(
+            child: TextButton.icon(
+              onPressed: ref.read(fluxAccueilProvider.notifier).chargerLaSuite,
+              icon: const Icon(Icons.refresh_rounded, size: 17),
+              label: const Text('Charger la suite'),
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (!etat.aUneSuite) {
+      return SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: Espaces.lg),
+          child: Center(
+            child: Text(
+              'Vous avez vu tout le catalogue.',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return const SliverToBoxAdapter();
   }
 }
 

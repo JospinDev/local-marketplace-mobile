@@ -30,6 +30,7 @@ class Routes {
   static const reservation = 'reservation';
   static const mesVentes = 'mes-ventes';
   static const vente = 'vente';
+  static const notifications = 'notifications';
 
   // --- chemins ----------------------------------------------------------
   static const cheminDemarrage = '/';
@@ -53,4 +54,5 @@ class Routes {
   static const cheminReservation = '/reservations/:id';
   static const cheminMesVentes = '/ventes';
   static const cheminVente = '/ventes/:id';
+  static const cheminNotifications = '/notifications';
 }

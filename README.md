@@ -25,7 +25,10 @@ HTTP.
 | — | Boutique publique d'un vendeur | ✅ livré |
 | 7 | Réservations (demander, accepter, partiel) | ✅ livré |
 | 8 | Ventes et double accusé | ✅ livré |
-| 9–11 | Avis, tableau de bord, notifications | ⏳ à venir |
+| 11 | Notifications (centre + temps réel) | ✅ livré |
+| — | Bandeau publicitaire administré | ✅ livré |
+| — | Menu latéral + flux infini de l'accueil | ✅ livré |
+| 9–10 | Avis, tableau de bord vendeur | ⏳ à venir |
 
 ---
 

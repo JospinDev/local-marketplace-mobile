@@ -174,31 +174,11 @@ class AccountScreen extends ConsumerWidget {
                 ),
               ).animate(delay: 280.ms).fadeIn().slideY(begin: 0.15),
 
+              // Reservations, ventes, achats et favoris sont passes
+              // dans le menu lateral de l'accueil : cet onglet garde ce
+              // qu'on MODIFIE (profil, vitrine), le menu rassemble ce
+              // qu'on CONSULTE.
               const SizedBox(height: Espaces.xl),
-              AppButton(
-                libelle: 'Mes reservations',
-                style: StyleBouton.secondaire,
-                icone: Icons.bookmark_border_rounded,
-                onPressed: () => context.pushNamed(Routes.mesReservations),
-              ).animate(delay: 290.ms).fadeIn(),
-
-              const SizedBox(height: Espaces.md),
-              AppButton(
-                libelle: 'Mes ventes et mes achats',
-                style: StyleBouton.secondaire,
-                icone: Icons.receipt_long_outlined,
-                onPressed: () => context.pushNamed(Routes.mesVentes),
-              ).animate(delay: 295.ms).fadeIn(),
-
-              const SizedBox(height: Espaces.md),
-              AppButton(
-                libelle: 'Mes favoris et vendeurs suivis',
-                style: StyleBouton.secondaire,
-                icone: Icons.favorite_border_rounded,
-                onPressed: () => context.pushNamed(Routes.mesListes),
-              ).animate(delay: 300.ms).fadeIn(),
-
-              const SizedBox(height: Espaces.md),
 
               AppButton(
                 libelle: 'Se deconnecter',

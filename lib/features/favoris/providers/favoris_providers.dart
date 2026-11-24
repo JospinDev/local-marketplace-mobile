@@ -223,7 +223,12 @@ final vendeursSuivisProvider =
 });
 
 /// Fil des annonces des vendeurs suivis.
+///
+/// `ref.watch(authProvider)` est indispensable : ce fil est personnel, et
+/// sans lui le resultat du compte precedent resterait en cache apres une
+/// deconnexion.
 final filVendeursProvider = FutureProvider<List<Produit>>((ref) async {
+  if (!ref.watch(authProvider).estConnecte) return const [];
   final page = await ref.watch(favorisRepositoryProvider).filDesVendeurs();
   return page.elements;
 });

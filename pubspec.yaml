@@ -38,6 +38,7 @@ dependencies:
   flutter_animate: ^4.5.2
   image_picker: ^1.2.4
   web_socket_channel: ^3.0.3
+  url_launcher: ^6.3.3
 
   # ----------------------------------------------------------------------
   # AJOUTES A LEUR ETAPE, PAS AVANT.
