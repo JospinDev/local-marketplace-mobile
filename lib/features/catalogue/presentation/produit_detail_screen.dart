@@ -17,6 +17,7 @@ import '../../../core/routing/routes.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../favoris/presentation/widgets/bouton_favori.dart';
 import '../../messagerie/providers/messagerie_providers.dart';
+import '../../reservations/presentation/widgets/demande_reservation_feuille.dart';
 import '../domain/produit.dart';
 import '../providers/catalogue_providers.dart';
 
@@ -538,6 +539,37 @@ class _BarreActionState extends ConsumerState<_BarreAction> {
     }
   }
 
+  /// Ouvre la feuille de demande de reservation.
+  ///
+  /// On ne pre-verifie pas le stock ici au-dela du bouton : le serveur
+  /// tranche sur le disponible du moment, et son message d'erreur donne
+  /// le chiffre exact.
+  Future<void> _reserver(Produit produit) async {
+    if (!ref.read(authProvider).estConnecte) {
+      AppFeedback.info(context, 'Connectez-vous pour reserver.');
+      context.pushNamed(Routes.connexion);
+      return;
+    }
+
+    final moi = ref.read(utilisateurProvider);
+    if (moi != null && moi.id == produit.vendeur?.id) {
+      AppFeedback.attention(
+        context,
+        'Vous ne pouvez pas reserver votre propre annonce.',
+      );
+      return;
+    }
+
+    await ouvrirDemandeReservation(
+      context,
+      produitId: produit.id,
+      titreProduit: produit.titre,
+      prix: produit.prix,
+      devise: produit.devise,
+      quantiteDisponible: produit.quantiteDisponible,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final produit = widget.produit;
@@ -576,12 +608,8 @@ class _BarreActionState extends ConsumerState<_BarreAction> {
                   : 'Reserver',
               icone: Icons.bookmark_add_outlined,
               compact: true,
-              onPressed: produit.estEnRupture
-                  ? null
-                  : () => AppFeedback.info(
-                        context,
-                        'Les reservations arrivent a l\'etape 7.',
-                      ),
+              onPressed:
+                  produit.estEnRupture ? null : () => _reserver(produit),
             ),
           ),
         ],

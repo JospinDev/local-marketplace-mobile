@@ -26,6 +26,10 @@ class Routes {
   static const mesListes = 'mes-listes';
   static const conversation = 'conversation';
   static const boutique = 'boutique';
+  static const mesReservations = 'mes-reservations';
+  static const reservation = 'reservation';
+  static const mesVentes = 'mes-ventes';
+  static const vente = 'vente';
 
   // --- chemins ----------------------------------------------------------
   static const cheminDemarrage = '/';
@@ -45,4 +49,8 @@ class Routes {
   static const cheminMesListes = '/mes-listes';
   static const cheminConversation = '/conversation/:id';
   static const cheminBoutique = '/boutique/:id';
+  static const cheminMesReservations = '/reservations';
+  static const cheminReservation = '/reservations/:id';
+  static const cheminMesVentes = '/ventes';
+  static const cheminVente = '/ventes/:id';
 }

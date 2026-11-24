@@ -176,6 +176,22 @@ class AccountScreen extends ConsumerWidget {
 
               const SizedBox(height: Espaces.xl),
               AppButton(
+                libelle: 'Mes reservations',
+                style: StyleBouton.secondaire,
+                icone: Icons.bookmark_border_rounded,
+                onPressed: () => context.pushNamed(Routes.mesReservations),
+              ).animate(delay: 290.ms).fadeIn(),
+
+              const SizedBox(height: Espaces.md),
+              AppButton(
+                libelle: 'Mes ventes et mes achats',
+                style: StyleBouton.secondaire,
+                icone: Icons.receipt_long_outlined,
+                onPressed: () => context.pushNamed(Routes.mesVentes),
+              ).animate(delay: 295.ms).fadeIn(),
+
+              const SizedBox(height: Espaces.md),
+              AppButton(
                 libelle: 'Mes favoris et vendeurs suivis',
                 style: StyleBouton.secondaire,
                 icone: Icons.favorite_border_rounded,

@@ -15,7 +15,11 @@ import '../../features/catalogue/presentation/accueil_screen.dart';
 import '../../features/favoris/presentation/mes_listes_screen.dart';
 import '../../features/messagerie/presentation/conversation_screen.dart';
 import '../../features/messagerie/presentation/conversations_screen.dart';
+import '../../features/reservations/presentation/mes_reservations_screen.dart';
+import '../../features/reservations/presentation/reservation_detail_screen.dart';
 import '../../features/vendeurs/presentation/boutique_vendeur_screen.dart';
+import '../../features/ventes/presentation/mes_ventes_screen.dart';
+import '../../features/ventes/presentation/vente_detail_screen.dart';
 import '../../features/catalogue/presentation/produit_detail_screen.dart';
 import '../../features/catalogue/presentation/recherche_screen.dart';
 import '../../features/shell/main_shell.dart';
@@ -137,6 +141,48 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       // Hors de la coquille a onglets : une conversation occupe tout
       // l'ecran, la barre du bas volerait de la place au clavier.
+      // Reservations et ventes : hors coquille a onglets, ce sont des
+      // ecrans de suivi ou l'on entre et d'ou l'on ressort.
+      GoRoute(
+        path: Routes.cheminMesReservations,
+        name: Routes.mesReservations,
+        parentNavigatorKey: _cleRacine,
+        builder: (context, etat) => MesReservationsScreen(
+          ongletInitial:
+              int.tryParse(etat.uri.queryParameters['onglet'] ?? '') ?? 0,
+        ),
+        routes: [
+          GoRoute(
+            path: ':id',
+            name: Routes.reservation,
+            parentNavigatorKey: _cleRacine,
+            builder: (context, etat) => ReservationDetailScreen(
+              reservationId:
+                  int.tryParse(etat.pathParameters['id'] ?? '') ?? 0,
+            ),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: Routes.cheminMesVentes,
+        name: Routes.mesVentes,
+        parentNavigatorKey: _cleRacine,
+        builder: (context, etat) => MesVentesScreen(
+          ongletInitial:
+              int.tryParse(etat.uri.queryParameters['onglet'] ?? '') ?? 0,
+        ),
+        routes: [
+          GoRoute(
+            path: ':id',
+            name: Routes.vente,
+            parentNavigatorKey: _cleRacine,
+            builder: (context, etat) => VenteDetailScreen(
+              venteId: int.tryParse(etat.pathParameters['id'] ?? '') ?? 0,
+            ),
+          ),
+        ],
+      ),
+
       // Boutique publique : accessible sans compte, comme le catalogue.
       GoRoute(
         path: Routes.cheminBoutique,
