@@ -56,10 +56,10 @@ class MainShell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      // Le tiroir est porte par la coquille, et non par l'accueil : un
-      // seul Scaffold, donc aucune ambiguite sur celui que
-      // `Scaffold.of(context).openDrawer()` ouvre. Il devient aussi
-      // accessible depuis les autres onglets.
+      // La cle designe CE Scaffold : le bouton hamburger l'ouvre par la
+      // cle et non par `Scaffold.of`, qui pouvait tomber sur un autre
+      // Scaffold et ne rien faire du tout.
+      key: cleScaffoldCoquille,
       drawer: const MenuLateral(),
       body: AnimatedSwitcher(
         duration: Mouvements.normal,

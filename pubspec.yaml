@@ -58,8 +58,52 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.8
 
 flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/branding/
+
+# ---------------------------------------------------------------- icones
+# `dart run flutter_launcher_icons` regenere les icones Android et iOS.
+#
+# Deux images, et non une : l'icone adaptative d'Android compose un
+# premier plan transparent sur un fond uni, et le systeme la recadre
+# librement — d'ou la marge interieure large de `symbole.png`. Les icones
+# heritees, elles, ne gerent pas la transparence : `icone.png` porte donc
+# deja son fond blanc.
+flutter_launcher_icons:
+  image_path: assets/branding/icone.png
+  android: true
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: assets/branding/symbole.png
+  adaptive_icon_monochrome: assets/branding/symbole.png
+  ios: true
+  remove_alpha_ios: true
+  min_sdk_android: 21
+
+# ------------------------------------------------------- ecran d'ouverture
+# `dart run flutter_native_splash:create` remplace l'ecran blanc par le
+# logo complet.
+#
+# Le fond reste clair en mode sombre comme en mode clair : les contre-
+# formes des lettres du logo sont blanches et opaques, elles trancheraient
+# sur un fond fonce.
+flutter_native_splash:
+  color: "#FFFFFF"
+  color_dark: "#FFFFFF"
+  image: assets/branding/logo.png
+  image_dark: assets/branding/logo.png
+  android_12:
+    # Android 12 impose une icone ronde et centree : le symbole seul s'y
+    # prete, le logo avec son texte y serait illisible une fois rogne.
+    image: assets/branding/symbole.png
+    image_dark: assets/branding/symbole.png
+    color: "#FFFFFF"
+    color_dark: "#FFFFFF"
+  android: true
+  ios: true
+  web: false

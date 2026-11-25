@@ -136,6 +136,20 @@ final mesAchatsProvider =
   );
 });
 
+/// Achats payes qui attendent MA confirmation de reception.
+///
+/// C'est le seul moment ou l'acheteur doit agir, et rien ne le lui
+/// disait : la vente restait bloquee en `PAID`, le vendeur attendait, et
+/// l'acheteur ne pouvait pas laisser d'avis sans savoir pourquoi. Ce
+/// compteur alimente la pastille du menu.
+final achatsAConfirmerProvider = FutureProvider<int>((ref) async {
+  if (!ref.watch(authProvider).estConnecte) return 0;
+  final page = await ref.watch(ventesRepositoryProvider).mesAchats(
+        statut: 'PAID',
+      );
+  return page.total;
+});
+
 final revenusProvider = FutureProvider<Revenus>((ref) async {
   if (!ref.watch(authProvider).estConnecte) return const Revenus();
   return ref.watch(ventesRepositoryProvider).revenus();

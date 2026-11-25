@@ -7,6 +7,7 @@ import '../../../core/routing/routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/brand_mark.dart';
+import '../../../core/widgets/app_feedback.dart';
 import '../../../core/widgets/etats.dart';
 import '../../../core/widgets/gradient_background.dart';
 import '../../../core/widgets/shimmer_box.dart';
@@ -14,6 +15,7 @@ import '../../auth/providers/auth_provider.dart';
 import '../../favoris/providers/favoris_providers.dart';
 import '../../notifications/providers/notifications_providers.dart';
 import '../../publicites/presentation/widgets/bandeau_publicites.dart';
+import '../../shell/menu_lateral.dart';
 import '../providers/flux_accueil_provider.dart';
 import '../domain/categorie.dart';
 import '../domain/produit.dart';
@@ -95,17 +97,21 @@ class _AccueilScreenState extends ConsumerState<AccueilScreen> {
                     children: [
                       // Ouvre le menu lateral : les pages de suivi y sont
                       // rassemblees, au lieu d'etre dans l'onglet Compte.
-                      Builder(
-                        builder: (context) => _BoutonRond(
-                          icone: Icons.menu_rounded,
-                          // `Scaffold.of(context)` est resolu AU CLIC, et
-                          // non pendant la construction : capturer le
-                          // `ScaffoldState` au moment du build garde une
-                          // reference qui peut devenir caduque quand la
-                          // coquille remplace son sous-arbre, et ouvrir un
-                          // tiroir mort donne un panneau vide.
-                          onTap: () => Scaffold.of(context).openDrawer(),
-                        ),
+                      _BoutonRond(
+                        icone: Icons.menu_rounded,
+                        onTap: () {
+                          // `ouvrirMenuLateral` passe par la cle du
+                          // Scaffold de la coquille. S'il repond faux, le
+                          // tiroir est injoignable : on le DIT, au lieu de
+                          // laisser un bouton muet.
+                          if (!ouvrirMenuLateral() && context.mounted) {
+                            AppFeedback.erreur(
+                              context,
+                              'Le menu est indisponible. Revenez a '
+                              "l'accueil et reessayez.",
+                            );
+                          }
+                        },
                       ),
                       const SizedBox(width: Espaces.xs),
                       const BrandLockup(taille: 28),

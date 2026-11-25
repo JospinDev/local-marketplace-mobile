@@ -46,6 +46,7 @@ class _VenteDetailScreenState extends ConsumerState<VenteDetailScreen> {
       ref.read(mesVentesProvider.notifier).appliquer(resultat.vente);
       ref.read(mesAchatsProvider.notifier).appliquer(resultat.vente);
       ref.invalidate(revenusProvider);
+      ref.invalidate(achatsAConfirmerProvider);
       ref.invalidate(venteProvider(widget.venteId));
 
       // Une annulation rend du stock : les reservations en dependent.

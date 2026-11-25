@@ -3,132 +3,53 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_theme.dart';
 
-/// Logo de Marketplace Burundi, dessine et non importe.
+/// Symbole de la marque : le sac de courses.
 ///
-/// Un logo peint se redimensionne sans perte, change de couleur avec le
-/// theme et s'anime (le toit se construit). Une image PNG ne fait aucune de
-/// ces trois choses.
+/// C'est desormais l'image officielle (`assets/branding/symbole.png`) et
+/// non plus un dessin : l'identite doit etre LA MEME que celle de l'icone
+/// de l'application et de l'ecran d'ouverture. Un logo peint a la main a
+/// beau se redimensionner sans perte, deux identites differentes dans la
+/// meme application en valent une seule mal faite.
 ///
-/// Le dessin : un toit de marche traditionnel pose sur un panier, reduit a
-/// ses lignes essentielles.
+/// `progression` est conservee pour l'animation d'ouverture : le symbole
+/// apparait en fondu et grandit legerement, au lieu de se dessiner trait
+/// par trait.
 class BrandMark extends StatelessWidget {
-  const BrandMark({
-    super.key,
-    this.taille = 64,
-    this.progression = 1,
-  });
+  const BrandMark({super.key, this.taille = 64, this.progression = 1});
 
   final double taille;
 
-  /// 0 → rien n'est dessine, 1 → logo complet. Permet de « construire » le
-  /// logo a l'ouverture de l'application.
+  /// 0 → invisible, 1 → symbole complet.
   final double progression;
 
   @override
   Widget build(BuildContext context) {
+    final avancee = progression.clamp(0.0, 1.0);
+
     return SizedBox(
       width: taille,
       height: taille,
-      child: CustomPaint(
-        painter: _PeintreLogo(progression: progression.clamp(0, 1)),
+      child: Opacity(
+        opacity: avancee,
+        child: Transform.scale(
+          scale: 0.82 + 0.18 * avancee,
+          // Export d'INTERFACE, distinct de `symbole.png` : ce dernier
+          // porte la marge large qu'exige l'icone adaptative d'Android,
+          // qui rendrait le logo minuscule ici. Imposer `width` et
+          // `height` aurait de toute facon rendu `scale` sans effet.
+          child: Image.asset(
+            'assets/branding/symbole_ui.png',
+            width: taille,
+            height: taille,
+            fit: BoxFit.contain,
+            filterQuality: FilterQuality.medium,
+          ),
+        ),
       ),
     );
   }
 }
 
-class _PeintreLogo extends CustomPainter {
-  _PeintreLogo({required this.progression});
-
-  final double progression;
-
-  @override
-  void paint(Canvas toile, Size taille) {
-    final l = taille.width;
-    final h = taille.height;
-
-    final traitLarge = l * 0.11;
-
-    // --- le toit : un chevron qui se trace de gauche a droite ----------
-    final toit = Path()
-      ..moveTo(l * 0.12, h * 0.42)
-      ..lineTo(l * 0.5, h * 0.12)
-      ..lineTo(l * 0.88, h * 0.42);
-
-    final avancementToit = (progression / 0.55).clamp(0.0, 1.0);
-    _tracerPartiel(
-      toile,
-      toit,
-      avancementToit,
-      Paint()
-        ..shader = AppColors.degradeMarque
-            .createShader(Rect.fromLTWH(0, 0, l, h))
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = traitLarge
-        ..strokeCap = StrokeCap.round
-        ..strokeJoin = StrokeJoin.round,
-    );
-
-    // --- le panier : un U qui apparait ensuite --------------------------
-    final avancementPanier =
-        ((progression - 0.45) / 0.55).clamp(0.0, 1.0);
-    if (avancementPanier > 0) {
-      final panier = Path()
-        ..moveTo(l * 0.22, h * 0.52)
-        ..lineTo(l * 0.28, h * 0.84)
-        ..lineTo(l * 0.72, h * 0.84)
-        ..lineTo(l * 0.78, h * 0.52);
-
-      _tracerPartiel(
-        toile,
-        panier,
-        avancementPanier,
-        Paint()
-          ..shader = AppColors.degradeMarqueInverse
-              .createShader(Rect.fromLTWH(0, 0, l, h))
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = traitLarge * 0.86
-          ..strokeCap = StrokeCap.round
-          ..strokeJoin = StrokeJoin.round,
-      );
-    }
-
-    // --- la pastille d'or : le point final ------------------------------
-    final avancementPoint = ((progression - 0.82) / 0.18).clamp(0.0, 1.0);
-    if (avancementPoint > 0) {
-      toile.drawCircle(
-        Offset(l * 0.5, h * 0.60),
-        l * 0.085 * avancementPoint,
-        Paint()..color = AppColors.or,
-      );
-    }
-  }
-
-  /// Dessine une fraction d'un chemin, pour l'effet « trait qui se trace ».
-  void _tracerPartiel(
-    Canvas toile,
-    Path chemin,
-    double fraction,
-    Paint peinture,
-  ) {
-    if (fraction <= 0) return;
-    if (fraction >= 1) {
-      toile.drawPath(chemin, peinture);
-      return;
-    }
-    for (final metrique in chemin.computeMetrics()) {
-      toile.drawPath(
-        metrique.extractPath(0, metrique.length * fraction),
-        peinture,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _PeintreLogo ancien) =>
-      ancien.progression != progression;
-}
-
-/// Logo accompagne du nom, pour les en-tetes.
 class BrandLockup extends StatelessWidget {
   const BrandLockup({super.key, this.taille = 34, this.clair = false});
 

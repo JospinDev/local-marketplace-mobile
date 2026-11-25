@@ -80,14 +80,16 @@ class _Liste extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final fournisseur =
-        cote == CoteVente.mesVentes ? mesVentesProvider : mesAchatsProvider;
+    final fournisseur = cote == CoteVente.mesVentes
+        ? mesVentesProvider
+        : mesAchatsProvider;
     final etat = ref.watch(fournisseur);
     final notifier = ref.read(fournisseur.notifier);
 
     return Column(
       children: [
         if (cote == CoteVente.mesVentes) const _BandeauRevenus(),
+        if (cote == CoteVente.mesAchats) const _BandeauAConfirmer(),
         _Filtres(actif: etat.filtreStatut, onChange: notifier.filtrer),
         Expanded(
           child: RefreshIndicator(
@@ -140,15 +142,15 @@ class _Liste extends ConsumerWidget {
             titre: filtre
                 ? 'Rien avec ce filtre'
                 : (cote == CoteVente.mesVentes
-                    ? 'Aucune vente'
-                    : 'Aucun achat'),
+                      ? 'Aucune vente'
+                      : 'Aucun achat'),
             message: filtre
                 ? 'Changez de filtre pour voir les autres.'
                 : (cote == CoteVente.mesVentes
-                    ? 'Acceptez une demande de reservation, puis '
-                        'enregistrez la vente depuis son detail.'
-                    : 'Vos achats apparaitront ici des que le vendeur '
-                        'aura enregistre la vente.'),
+                      ? 'Acceptez une demande de reservation, puis '
+                            'enregistrez la vente depuis son detail.'
+                      : 'Vos achats apparaitront ici des que le vendeur '
+                            'aura enregistre la vente.'),
             libelleAction: filtre ? 'Tout voir' : null,
             onAction: filtre ? () => notifier.filtrer(null) : null,
           ),
@@ -168,12 +170,12 @@ class _Liste extends ConsumerWidget {
       itemBuilder: (context, index) {
         final vente = etat.ventes[index];
         return VenteCarte(
-          vente: vente,
-          onTap: () => context.pushNamed(
-            Routes.vente,
-            pathParameters: {'id': '${vente.id}'},
-          ),
-        )
+              vente: vente,
+              onTap: () => context.pushNamed(
+                Routes.vente,
+                pathParameters: {'id': '${vente.id}'},
+              ),
+            )
             .animate()
             .fadeIn(
               delay: Duration(milliseconds: 24 * index),
@@ -308,6 +310,60 @@ class _Filtres extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+/// Rappel en haut de « Mes achats ».
+///
+/// Le double accuse bloque sur l'acheteur : tant qu'il n'a pas confirme
+/// la reception, la vente reste en attente et il ne peut pas laisser
+/// d'avis. Rien ne le lui disait, et il n'avait aucune raison d'ouvrir
+/// une vente deja payee.
+class _BandeauAConfirmer extends ConsumerWidget {
+  const _BandeauAConfirmer();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final nombre = ref
+        .watch(achatsAConfirmerProvider)
+        .maybeWhen(data: (valeur) => valeur, orElse: () => 0);
+    if (nombre == 0) return const SizedBox.shrink();
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(
+        Espaces.ecran,
+        Espaces.sm,
+        Espaces.ecran,
+        0,
+      ),
+      padding: const EdgeInsets.all(Espaces.sm),
+      decoration: BoxDecoration(
+        color: AppColors.alerte.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(Rayons.md),
+      ),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.inventory_rounded,
+            size: 19,
+            color: AppColors.alerte,
+          ),
+          const SizedBox(width: Espaces.xs),
+          Expanded(
+            child: Text(
+              nombre == 1
+                  ? "Un achat attend votre confirmation de reception. "
+                        "Ouvrez-le pour terminer la vente et pouvoir laisser "
+                        "un avis."
+                  : "$nombre achats attendent votre confirmation de "
+                        "reception. Ouvrez-les pour terminer les ventes et "
+                        "pouvoir laisser un avis.",
+              style: const TextStyle(fontSize: 12, height: 1.3),
+            ),
+          ),
+        ],
       ),
     );
   }
